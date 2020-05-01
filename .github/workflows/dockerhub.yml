@@ -8,7 +8,7 @@ on:
       - "*.js"
       - "package*.json"
       - "Dockerfile"
-      - ".github/workflows/dockerimage.yml"
+      - ".github/workflows/dockerhub.yml"
 
 jobs:
   release:
