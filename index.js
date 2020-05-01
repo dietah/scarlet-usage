@@ -33,11 +33,12 @@ server.get('/info', async (req, res) => {
 
 		if (usage && usage.length > 1) {
 			const parsedUsage = usage.map(str => str.replace('Math.round(', ''));
-			logger.info(`current use: ${parsedUsage[0]} / ${parsedUsage[1]} GB`);
+			const daysUntillReset = statusPage.match(/([0-9]{1,2})( dag\(en\))/g)[0].replace(' dag(en)', '');
+			logger.info(`current use: ${parsedUsage[0]} / ${parsedUsage[1]} GB, ${daysUntillReset} days until reset`);
 
 			const endDateTime = moment();
 			logger.debug(`processing took ${time(startDateTime, endDateTime)}`);
-			res.send({ usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]) });
+			res.send({ usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]), daysUntillReset: parseInt(daysUntillReset) });
 		} else {
 			res.send(500, { code: 500, message: 'could not parse usage, something went wrong with fetching the page' });
 		}
