@@ -29,12 +29,18 @@ server.get('/info', async (req, res) => {
 		await getLoggedinCookies();
 
 		const statusPage = await getStatusPage();
-		const usage = statusPage.match(/(Math\.round\()([0-9]+\.[0-9]+)/g).map(str => str.replace('Math.round(', ''));
-		logger.info(`current use: ${usage[0]} / ${usage[1]} GB`);
+		const usage = statusPage.match(/(Math\.round\()([0-9]+\.[0-9]+)/g);
 
-		const endDateTime = moment();
-		logger.debug(`processing took ${time(startDateTime, endDateTime)}`);
-		res.send({ usage: parseFloat(usage[0]), limit: parseFloat(usage[1]) });
+		if (usage && usage.length > 1) {
+			const parsedUsage = usage.map(str => str.replace('Math.round(', ''));
+			logger.info(`current use: ${parsedUsage[0]} / ${parsedUsage[1]} GB`);
+
+			const endDateTime = moment();
+			logger.debug(`processing took ${time(startDateTime, endDateTime)}`);
+			res.send({ usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]) });
+		} else {
+			res.send(500, { code: 500, message: 'could not parse usage, something went wrong with fetching the page' });
+		}
 	} catch (err) {
 		logger.error(err);
 		res.send(500, { code: 500, message: `an internal error occurred ${err}` });
