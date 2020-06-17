@@ -38,7 +38,7 @@ server.get('/info', async (req, res) => {
 
 			const endDateTime = moment();
 			logger.debug(`processing took ${time(startDateTime, endDateTime)}`);
-			res.send({ usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]), daysUntillReset: parseInt(daysUntillReset) });
+			res.send({ usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]), daysUntillReset: parseInt(daysUntillReset, 10) });
 		} else {
 			res.send(500, { code: 500, message: 'could not parse usage, something went wrong with fetching the page' });
 		}
