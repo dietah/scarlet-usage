@@ -78,7 +78,7 @@ function getStatusPage() {
 		return page;
 	})
 	.catch((err) => {
-		logger.error('rould not retreive new session cookies', err);
-		throw new Error('rould not retreive new session cookies');
+		logger.error('could not retreive new session cookies', err);
+		throw new Error('could not retreive new session cookies');
 	});
 }
