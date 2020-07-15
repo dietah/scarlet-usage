@@ -1,5 +1,6 @@
 const restify = require('restify');
 const moment = require('moment');
+const mqtt = require('mqtt');
 const request = require('request-promise-native').defaults({ jar: true });
 const logger = require('./logger');
 const { time } = require('./helpers');
@@ -12,6 +13,10 @@ logger.info('environment variables:\n', consoleConfig);
 const server = restify.createServer();
 server.server.setTimeout(config.SERVER_TIMEOUT);
 server.use(restify.plugins.queryParser({ mapParams: false }));
+
+// mqtt settings
+let client;
+if (config.MQTT_HOST && config.MQTT_PORT && config.MQTT_TOPIC) client = mqtt.connect({ port: config.MQTT_PORT, host: config.MQTT_HOST });
 
 // some handling
 server.on('error', (err) => {
@@ -38,7 +43,11 @@ server.get('/info', async (req, res) => {
 
 			const endDateTime = moment();
 			logger.debug(`processing took ${time(startDateTime, endDateTime)}`);
-			res.send({ usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]), daysUntillReset: parseInt(daysUntillReset, 10) });
+
+			const data = { usage: parseFloat(parsedUsage[0]), limit: parseFloat(parsedUsage[1]), daysUntillReset: parseInt(daysUntillReset, 10) };
+
+			if (client) postValuesToMQTT(data);
+			res.send(data);
 		} else {
 			res.send(500, { code: 500, message: 'could not parse usage, something went wrong with fetching the page' });
 		}
@@ -81,4 +90,10 @@ function getStatusPage() {
 		logger.error('could not retreive new session cookies', err);
 		throw new Error('could not retreive new session cookies');
 	});
+}
+
+function postValuesToMQTT(data) {
+	client.publish(`${config.MQTT_TOPIC}/usage`, `${data.usage}`);
+	client.publish(`${config.MQTT_TOPIC}/limit`, `${data.limit}`);
+	client.publish(`${config.MQTT_TOPIC}/daysUntillReset`, `${data.daysUntillReset}`);
 }

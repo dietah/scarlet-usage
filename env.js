@@ -10,6 +10,10 @@ module.exports = envalid.cleanEnv(process.env, {
 
 	USERNAME:		envalid.str({ desc: 'Scarlet username' }),
 	PASSWORD:		envalid.str({ desc: 'Scarlet password' }),
+
+	MQTT_HOST:		envalid.host({ desc: 'The MQTT broker host address' }),
+	MQTT_PORT:		envalid.port({ default: 1883, desc: 'The MQTT broker port' }),
+	MQTT_TOPIC:		envalid.str({ default:'internet', desc: 'The MQTT topic to publish the data' }),
 }, {
 	strict: true
 });
