@@ -16,7 +16,7 @@ server.use(restify.plugins.queryParser({ mapParams: false }));
 
 // mqtt settings
 let client;
-if (config.MQTT_HOST && config.MQTT_PORT && config.MQTT_TOPIC) client = mqtt.connect({ port: config.MQTT_PORT, host: config.MQTT_HOST });
+if (config.MQTT_HOST) client = mqtt.connect({ port: config.MQTT_PORT, host: config.MQTT_HOST });
 
 // some handling
 server.on('error', (err) => {
@@ -27,7 +27,7 @@ server.on('error', (err) => {
 // router
 server.get('/info', async (req, res) => {
 	const startDateTime = moment();
-	logger.logRequest('isp-scarlet-usage-api.info.login');
+	logger.logRequest('scarlet-usage.info.login');
 
 	try {
 		// post login page with credentials to get user cookies, they will be put in the jar (default enabled)
@@ -58,7 +58,7 @@ server.get('/info', async (req, res) => {
 });
 
 server.listen(config.SERVER_PORT, () => {
-	logger.info(`scarlet-usage-api listening on port ${config.SERVER_PORT}`);
+	logger.info(`scarlet-usage listening on port ${config.SERVER_PORT}`);
 });
 
 function getLoggedinCookies() {

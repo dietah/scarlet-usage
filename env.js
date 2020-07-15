@@ -13,7 +13,7 @@ module.exports = envalid.cleanEnv(process.env, {
 
 	MQTT_HOST:		envalid.host({ desc: 'The MQTT broker host address' }),
 	MQTT_PORT:		envalid.port({ default: 1883, desc: 'The MQTT broker port' }),
-	MQTT_TOPIC:		envalid.str({ default:'internet', desc: 'The MQTT topic to publish the data' }),
+	MQTT_TOPIC:		envalid.str({ default:'isp', desc: 'The MQTT topic to publish the data' }),
 }, {
 	strict: true
 });
